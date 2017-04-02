@@ -37,28 +37,35 @@ namespace Shuttle.Esb.Tools.TransferMessages
                     throw new ArgumentException("Source queue uri cannot be the same as the destination queue uri.");
                 }
 
-                Console.WriteLine();
-                Console.WriteLine();
-                ColoredConsole.WriteLine(ConsoleColor.Red, "About to transfer ALL messages...");
-                Console.WriteLine();
-                ColoredConsole.WriteLine(ConsoleColor.Gray, "Source queue uri:");
-                ColoredConsole.WriteLine(ConsoleColor.White, "   {0}", sourceQueueUri);
-                ColoredConsole.WriteLine(ConsoleColor.Gray, "Destination queue uri:");
-                ColoredConsole.WriteLine(ConsoleColor.White, "   {0}", destinationQueueUri);
-                Console.WriteLine();
-                ColoredConsole.WriteLine(ConsoleColor.Yellow, "Are you sure that you want to continue? [Y]es or [N]o (default is No)");
-                Console.WriteLine();
-
-                var answer = Console.ReadKey();
-
-                Console.WriteLine();
-                Console.WriteLine();
-
-                if (!answer.KeyChar.ToString().Equals("Y", StringComparison.InvariantCultureIgnoreCase))
+                if (!arguments.Contains("quiet") && !arguments.Contains("q"))
                 {
-                    ColoredConsole.WriteLine(ConsoleColor.Cyan, "No messages transferred.");
-                    return;
+                    Console.WriteLine();
+                    Console.WriteLine();
+                    ColoredConsole.WriteLine(ConsoleColor.Red, "About to transfer ALL messages...");
+                    Console.WriteLine();
+                    ColoredConsole.WriteLine(ConsoleColor.Gray, "Source queue uri:");
+                    ColoredConsole.WriteLine(ConsoleColor.White, "   {0}", sourceQueueUri);
+                    ColoredConsole.WriteLine(ConsoleColor.Gray, "Destination queue uri:");
+                    ColoredConsole.WriteLine(ConsoleColor.White, "   {0}", destinationQueueUri);
+                    Console.WriteLine();
+                    ColoredConsole.WriteLine(ConsoleColor.Yellow,
+                        "Are you sure that you want to continue? [Y]es or [N]o (default is No)");
+                    Console.WriteLine();
+
+                    var answer = Console.ReadKey();
+
+                    Console.WriteLine();
+                    Console.WriteLine();
+
+                    if (!answer.KeyChar.ToString().Equals("Y", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        ColoredConsole.WriteLine(ConsoleColor.Cyan, "No messages transferred.");
+                        return;
+                    }
                 }
+
+                var clear = arguments.Contains("clear");
+                var copy = arguments.Contains("copy");
 
                 ColoredConsole.WriteLine(ConsoleColor.DarkCyan, "[starting]");
 
@@ -82,10 +89,23 @@ namespace Shuttle.Esb.Tools.TransferMessages
                     {
                         var stream = receivedMessage.Stream;
 
-                        destinationQueue.Enqueue(
-                            (TransportMessage)serializer.Deserialize(TransportMessageType, stream),
-                            stream);
-                        sourceQueue.Acknowledge(receivedMessage.AcknowledgementToken);
+                        var transportMessage = (TransportMessage)serializer.Deserialize(TransportMessageType, stream);
+
+                        if (clear)
+                        {
+                            transportMessage.FailureMessages.Clear();
+
+                            stream.Dispose();
+
+                            stream = serializer.Serialize(transportMessage);
+                        }
+
+                        destinationQueue.Enqueue(transportMessage, stream);
+
+                        if (!copy)
+                        {
+                            sourceQueue.Acknowledge(receivedMessage.AcknowledgementToken);
+                        }
 
                         transferCount++;
 
@@ -132,7 +152,27 @@ namespace Shuttle.Esb.Tools.TransferMessages
 
         private static void ShowHelp()
         {
-            throw new NotImplementedException();
+            Console.WriteLine(@"
+Shuttle.Esb.Tools.TransferMessages.exe
+
+Transfers ***all*** messages from the source queue to the destination queue:
+
+Shuttle.Esb.Tools.TransferMessages.exe 
+	/[source|s]={queueUri} 
+        - The queue uri where you are transferring the messages from.
+
+	/[destination|d]={queueUri}
+        - The queue uri where you are transferring the messages to.
+
+	/clear
+        - Clears the `FailureMessage` collection.
+
+    /copy
+        - Copies all the messages, leaving the original.
+
+	/[quiet|q]
+        - Quiet mode.  You will not receive any prompts.
+");
         }
     }
 }

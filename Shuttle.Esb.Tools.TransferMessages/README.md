@@ -3,9 +3,22 @@
 Transfers ***all*** messages from the source queue to the destination queue:
 
 ```
-Shuttle.Esb.Tools.TransferMessages.exe /source:{queueUri} /destination:{queueUri}
+Shuttle.Esb.Tools.TransferMessages.exe 
+	/[source|s]={queueUri} 
+	/[destination|d]={queueUri}
+	/clear
+	/copy
+	/[quiet|q]
 ```
 
-The `source` argument may be shortened to `s` and the `destination` argument may be shortened to `d`.
-
 If an argument is omitted you will be prompted to enter it.
+
+| Argument | Shortened | Description |
+| --- | --- | --- |
+| `source` | `s` | The queue uri where you are transferring the messages ***from***. |
+| `destination` | `d` | The queue uri where you are transferring the messages ***to***. |
+| `clear` | `clear` | Clears the `FailureMessage` collection. |
+| `copy` | `copy` | Copies all the messages, leaving the original. |
+| `quiet` | `q` | Quiet mode.  You will not receive any prompts. |
+
+
