@@ -37,11 +37,14 @@ namespace Shuttle.Esb.Tools.TransferMessages
                     throw new ArgumentException("Source queue uri cannot be the same as the destination queue uri.");
                 }
 
+                var maximumCount = arguments.Get("count", arguments.Get("c", 0));
+
                 if (!arguments.Contains("quiet") && !arguments.Contains("q"))
                 {
                     Console.WriteLine();
                     Console.WriteLine();
-                    ColoredConsole.WriteLine(ConsoleColor.Red, "About to transfer ALL messages...");
+                    ColoredConsole.WriteLine(ConsoleColor.Red, "About to transfer {0} message{1}...",
+                        maximumCount == 0 ? "ALL" : maximumCount.ToString(), maximumCount == 1 ? string.Empty : "s");
                     Console.WriteLine();
                     ColoredConsole.WriteLine(ConsoleColor.Gray, "Source queue uri:");
                     ColoredConsole.WriteLine(ConsoleColor.White, "   {0}", sourceQueueUri);
@@ -89,7 +92,7 @@ namespace Shuttle.Esb.Tools.TransferMessages
                     {
                         var stream = receivedMessage.Stream;
 
-                        var transportMessage = (TransportMessage)serializer.Deserialize(TransportMessageType, stream);
+                        var transportMessage = (TransportMessage) serializer.Deserialize(TransportMessageType, stream);
 
                         if (clear)
                         {
@@ -109,11 +112,19 @@ namespace Shuttle.Esb.Tools.TransferMessages
 
                         transferCount++;
 
-                        receivedMessage = sourceQueue.GetMessage();
-
-                        if (transferCount % 100 == 0)
+                        if (transferCount != maximumCount)
                         {
-                            ColoredConsole.WriteLine(ConsoleColor.DarkCyan, "Transferred {0} messages so far...", transferCount);
+                            receivedMessage = sourceQueue.GetMessage();
+
+                            if (transferCount % 100 == 0)
+                            {
+                                ColoredConsole.WriteLine(ConsoleColor.DarkCyan, "Transferred {0} messages so far...",
+                                    transferCount);
+                            }
+                        }
+                        else
+                        {
+                            receivedMessage = null;
                         }
                     }
 
@@ -127,7 +138,7 @@ namespace Shuttle.Esb.Tools.TransferMessages
             }
             catch (Exception ex)
             {
-                ColoredConsole.WriteLine(ConsoleColor.Red, ex.AllMessages()); 
+                ColoredConsole.WriteLine(ConsoleColor.Red, ex.AllMessages());
             }
         }
 

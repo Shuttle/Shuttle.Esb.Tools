@@ -8,6 +8,7 @@ Shuttle.Esb.Tools.TransferMessages.exe
 	/[destination|d]={queueUri}
 	/clear
 	/copy
+	/[count|c]
 	/[quiet|q]
 ```
 
@@ -19,6 +20,7 @@ If an argument is omitted you will be prompted to enter it.
 | `destination` | `d` | The queue uri where you are transferring the messages ***to***. |
 | `clear` | `clear` | Clears the `FailureMessage` collection. |
 | `copy` | `copy` | Copies all the messages, leaving the original. |
+| `count` | `c` | The maximum number of messages to transfer. |
 | `quiet` | `q` | Quiet mode.  You will not receive any prompts. |
 
 
