@@ -70,6 +70,11 @@ namespace Shuttle.Esb.Tools.TransferMessages
                 var clear = arguments.Contains("clear");
                 var copy = arguments.Contains("copy");
 
+                if (!copy && maximumCount == 0)
+                {
+                    maximumCount = 30;
+                }
+
                 ColoredConsole.WriteLine(ConsoleColor.DarkCyan, "[starting]");
 
                 var container = new WindsorComponentContainer(new WindsorContainer());
@@ -182,7 +187,7 @@ Shuttle.Esb.Tools.TransferMessages.exe
         - Copies all the messages, leaving the original.
 
     /[count\c]={count}
-        - Transfers the given number of messages or all when 0.  Default is 0.
+        - Transfers the given number of messages or all when 0.  Default is 0 when /copy is excluded (transferring); else 30 for /copy.
 
     /[quiet|q]
         - Quiet mode.  You will not receive any prompts.
