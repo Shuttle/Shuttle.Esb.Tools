@@ -155,7 +155,7 @@ namespace Shuttle.Esb.Tools.TransferMessages
             Console.WriteLine(@"
 Shuttle.Esb.Tools.TransferMessages.exe
 
-Transfers ***all*** messages from the source queue to the destination queue:
+Transfers messages from the source queue to the destination queue:
 
 Shuttle.Esb.Tools.TransferMessages.exe 
 	/[source|s]={queueUri} 
@@ -170,7 +170,10 @@ Shuttle.Esb.Tools.TransferMessages.exe
     /copy
         - Copies all the messages, leaving the original.
 
-	/[quiet|q]
+    /[count\c]={count}
+        - Transfers the given number of messages or all when 0.  Default is 0.
+
+    /[quiet|q]
         - Quiet mode.  You will not receive any prompts.
 ");
         }
