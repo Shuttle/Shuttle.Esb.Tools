@@ -1,6 +1,6 @@
 # Shuttle.Esb.Tools.TransferMessages
 
-Transfers messages from the source queue to the destination queue:
+Transfers ***all*** messages from the source queue to the destination queue:
 
 ```
 Shuttle.Esb.Tools.TransferMessages.exe 
