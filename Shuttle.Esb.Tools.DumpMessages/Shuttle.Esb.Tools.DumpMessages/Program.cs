@@ -106,7 +106,7 @@ namespace Shuttle.Esb.Tools.DumpMessages
                             message.InnerXml = Encoding.UTF8.GetString(transportMessage.Message);
                         }
 
-                        document.Save(Path.Combine(folder, string.Concat(transportMessage.MessageId.ToString("n"), ".xml")));
+                        Dump(document, Path.Combine(folder, string.Concat(transportMessage.MessageId.ToString("n"), ".xml")));
 
                         count++;
 
@@ -138,6 +138,25 @@ namespace Shuttle.Esb.Tools.DumpMessages
                 ColoredConsole.WriteLine(ConsoleColor.Red, ex.AllMessages());
             }
         }
+
+        private static void Dump(XmlDocument document, string path)
+        {
+            var xml = new StringBuilder();
+            var settings = new XmlWriterSettings
+            {
+                Indent = true,
+                IndentChars = "  ",
+                NewLineChars = "\r\n",
+                NewLineHandling = NewLineHandling.Replace
+            };
+            using (var writer = XmlWriter.Create(xml, settings))
+            {
+                document.Save(writer);
+            }
+            
+            File.WriteAllText(path, xml.ToString());
+        }
+
         private static string GetQueueUri(Arguments arguments, string name)
         {
             var uri = arguments.Get(name, arguments.Get(name.Substring(0, 1), string.Empty));
