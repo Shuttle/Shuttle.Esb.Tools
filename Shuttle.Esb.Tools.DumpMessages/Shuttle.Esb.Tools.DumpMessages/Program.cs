@@ -70,7 +70,7 @@ namespace Shuttle.Esb.Tools.DumpMessages
 
                 ServiceBus.Register(container);
 
-                var transferCount = 0;
+                var count = 0;
 
                 var queueManager = container.Resolve<IQueueManager>();
                 var serializer = container.Resolve<ISerializer>();
@@ -108,16 +108,16 @@ namespace Shuttle.Esb.Tools.DumpMessages
 
                         document.Save(Path.Combine(folder, string.Concat(transportMessage.MessageId.ToString("n"), ".xml")));
 
-                        transferCount++;
+                        count++;
 
-                        if (transferCount != maximumCount)
+                        if (count != maximumCount)
                         {
                             receivedMessage = queue.GetMessage();
 
-                            if (transferCount % 100 == 0)
+                            if (count % 100 == 0)
                             {
                                 ColoredConsole.WriteLine(ConsoleColor.DarkCyan, "Dumped {0} messages so far...",
-                                    transferCount);
+                                    count);
                             }
                         }
                         else
@@ -128,7 +128,7 @@ namespace Shuttle.Esb.Tools.DumpMessages
 
                     queue.AttemptDispose();
 
-                    ColoredConsole.WriteLine(ConsoleColor.Cyan, "Transferred {0} messages in total.", transferCount);
+                    ColoredConsole.WriteLine(ConsoleColor.Cyan, "Dumped {0} messages in total.", count);
                 }
 
                 queueManager.AttemptDispose();
