@@ -39,17 +39,24 @@ namespace Shuttle.Esb.Tools.TransferMessages
 
                 var maximumCount = arguments.Get("count", arguments.Get("c", 0));
 
+                var clear = arguments.Contains("clear");
+                var copy = arguments.Contains("copy");
+
+                if (maximumCount == 0)
+                {
+                    maximumCount = 30;
+                }
+
                 if (!arguments.Contains("quiet") && !arguments.Contains("q"))
                 {
                     Console.WriteLine();
                     Console.WriteLine();
-                    ColoredConsole.WriteLine(ConsoleColor.Red, "About to transfer {0} message{1}...",
-                        maximumCount == 0 ? "ALL" : maximumCount.ToString(), maximumCount == 1 ? string.Empty : "s");
+                    ColoredConsole.WriteLine(ConsoleColor.Red, $"About to transfer {maximumCount} message{(maximumCount == 1 ? string.Empty : "s")}...");
                     Console.WriteLine();
                     ColoredConsole.WriteLine(ConsoleColor.Gray, "Source queue uri:");
-                    ColoredConsole.WriteLine(ConsoleColor.White, "   {0}", sourceQueueUri);
+                    ColoredConsole.WriteLine(ConsoleColor.White, $"   {sourceQueueUri}");
                     ColoredConsole.WriteLine(ConsoleColor.Gray, "Destination queue uri:");
-                    ColoredConsole.WriteLine(ConsoleColor.White, "   {0}", destinationQueueUri);
+                    ColoredConsole.WriteLine(ConsoleColor.White, $"   {destinationQueueUri}");
                     Console.WriteLine();
                     ColoredConsole.WriteLine(ConsoleColor.Yellow,
                         "Are you sure that you want to continue? [Y]es or [N]o (default is No)");
@@ -65,14 +72,6 @@ namespace Shuttle.Esb.Tools.TransferMessages
                         ColoredConsole.WriteLine(ConsoleColor.Cyan, "No messages transferred.");
                         return;
                     }
-                }
-
-                var clear = arguments.Contains("clear");
-                var copy = arguments.Contains("copy");
-
-                if (!copy && maximumCount == 0)
-                {
-                    maximumCount = 30;
                 }
 
                 ColoredConsole.WriteLine(ConsoleColor.DarkCyan, "[starting]");
@@ -97,7 +96,7 @@ namespace Shuttle.Esb.Tools.TransferMessages
                     {
                         var stream = receivedMessage.Stream;
 
-                        var transportMessage = (TransportMessage) serializer.Deserialize(TransportMessageType, stream);
+                        var transportMessage = (TransportMessage)serializer.Deserialize(TransportMessageType, stream);
 
                         if (clear)
                         {
@@ -113,6 +112,10 @@ namespace Shuttle.Esb.Tools.TransferMessages
                         if (!copy)
                         {
                             sourceQueue.Acknowledge(receivedMessage.AcknowledgementToken);
+                        }
+                        else
+                        {
+                            sourceQueue.Release(receivedMessage.AcknowledgementToken);
                         }
 
                         transferCount++;
