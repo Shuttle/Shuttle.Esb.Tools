@@ -20,7 +20,7 @@ If an argument is omitted you will be prompted to enter it.
 | `destination` | `d` | The queue uri where you are transferring the messages ***to***. |
 | `clear` | `clear` | Clears the `FailureMessage` collection. |
 | `copy` | `copy` | Copies all the messages, leaving the original. |
-| `count` | `c` | Transfers the given number of messages or all when 0.  Default is 0 when /copy is excluded (transferring); else 30 for /copy. |
+| `count` | `c` | Transfers the given number of messages.  Default is 30. |
 | `quiet` | `q` | Quiet mode.  You will not receive any prompts. |
 
 
