@@ -1,0 +1,29 @@
+<TransportMessage>
+  <Message>
+	<CustomMessage>
+		<WithCustomTags andAttributes="here" />
+	</CustomMessage>
+  </Message>
+  <MessageReceivedId></MessageReceivedId>
+  <MessageId>{will be generated}</MessageId>
+  <CorrelationId />
+  <SenderInboxWorkQueueUri></SenderInboxWorkQueueUri>
+  <RecipientInboxWorkQueueUri>{will be set to destination uri if empty}</RecipientInboxWorkQueueUri>
+  <PrincipalIdentityName></PrincipalIdentityName>
+  <IgnoreTillDate>{UTC}</IgnoreTillDate>
+  <SendDate>{will be set to DateTime.Now if empty}</SendDate>
+  <ExpiryDate>{UTC}</ExpiryDate>
+  <FailureMessages>
+    <string></string>
+  </FailureMessages>
+  <MessageType>{full type name}</MessageType>
+  <AssemblyQualifiedName></AssemblyQualifiedName>
+  <EncryptionAlgorithm />
+  <CompressionAlgorithm />
+  <Headers>
+    <TransportHeader>
+      <Key>{optional key}</Key>
+      <Value>{optional value}</Value>
+    </TransportHeader>
+  </Headers>
+</TransportMessage>
