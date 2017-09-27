@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Castle.Windsor;
 using Shuttle.Core.Castle;
 using Shuttle.Core.Infrastructure;
@@ -51,7 +52,7 @@ namespace Shuttle.Esb.Tools.TransferMessages
                 {
                     Console.WriteLine();
                     Console.WriteLine();
-                    ColoredConsole.WriteLine(ConsoleColor.Red, $"About to transfer {maximumCount} message{(maximumCount == 1 ? string.Empty : "s")}...");
+                    ColoredConsole.WriteLine(ConsoleColor.Red, $"About to {(copy ? "copy" : "transfer")} {maximumCount} message{(maximumCount == 1 ? string.Empty : "s")}...");
                     Console.WriteLine();
                     ColoredConsole.WriteLine(ConsoleColor.Gray, "Source queue uri:");
                     ColoredConsole.WriteLine(ConsoleColor.White, $"   {sourceQueueUri}");
@@ -81,9 +82,12 @@ namespace Shuttle.Esb.Tools.TransferMessages
                 ServiceBus.Register(container);
 
                 var transferCount = 0;
+                var skipCount = 0;
+                var processedWording = (copy ? "Copied" : "Transferred");
 
                 var queueManager = container.Resolve<IQueueManager>();
                 var serializer = container.Resolve<ISerializer>();
+                var messageIds = new HashSet<Guid>();
 
                 using (ServiceBus.Create(container).Start())
                 {
@@ -107,7 +111,15 @@ namespace Shuttle.Esb.Tools.TransferMessages
                             stream = serializer.Serialize(transportMessage);
                         }
 
-                        destinationQueue.Enqueue(transportMessage, stream);
+                        if (!messageIds.Contains(transportMessage.MessageId))
+                        {
+                            destinationQueue.Enqueue(transportMessage, stream);
+                            messageIds.Add(transportMessage.MessageId);
+                        }
+                        else
+                        {
+                            skipCount++;
+                        }
 
                         if (!copy)
                         {
@@ -126,8 +138,7 @@ namespace Shuttle.Esb.Tools.TransferMessages
 
                             if (transferCount % 100 == 0)
                             {
-                                ColoredConsole.WriteLine(ConsoleColor.DarkCyan, "Transferred {0} messages so far...",
-                                    transferCount);
+                                ColoredConsole.WriteLine(ConsoleColor.DarkCyan, $"{processedWording} {transferCount} messages so far...");
                             }
                         }
                         else
@@ -138,11 +149,16 @@ namespace Shuttle.Esb.Tools.TransferMessages
 
                     sourceQueue.AttemptDispose();
                     destinationQueue.AttemptDispose();
-
-                    ColoredConsole.WriteLine(ConsoleColor.Cyan, "Transferred {0} messages in total.", transferCount);
                 }
 
                 queueManager.AttemptDispose();
+
+                ColoredConsole.WriteLine(ConsoleColor.Cyan, $"{processedWording} {transferCount} messages in total.");
+
+                if (skipCount > 0)
+                {
+                    ColoredConsole.WriteLine(ConsoleColor.DarkCyan, $"Skipped {skipCount} duplicate messages.");
+                }
             }
             catch (Exception ex)
             {
