@@ -14,7 +14,7 @@ If an argument is omitted you will be prompted to enter it.
 | Argument | Shortened | Description |
 | --- | --- | --- |
 | `destination` | `d` | The queue uri where you are enqueuing the message ***to***. |
-| `path` | `p` | The path to the file containing the message in a deserialized format.  The default is 'message.txt'. |
+| `path` | `p` | The path to the file containing the message in a deserialized format.  The default is 'message.esb'. |
 | `quiet` | `q` | Quiet mode.  You will not receive any prompts. |
 
 

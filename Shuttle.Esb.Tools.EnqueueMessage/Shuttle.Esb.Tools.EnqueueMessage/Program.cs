@@ -31,7 +31,7 @@ namespace Shuttle.Esb.Tools.EnqueueMessage
 
                 var destinationQueueUri = GetArgument(arguments, "destination", "d", "Enter the destination queue uri");
                 var messageType = GetArgument(arguments, "messageType", "mt", "Enter the full type name of the message");
-                var path = arguments.Get("path", arguments.Get("p", "message.txt"));
+                var path = arguments.Get("path", arguments.Get("p", "message.esb"));
 
                 if (!File.Exists(path))
                 {
