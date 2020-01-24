@@ -18,7 +18,7 @@ using System.Runtime.InteropServices;
 #endif
 
 [assembly: AssemblyVersion("1.0.4.0")]
-[assembly: AssemblyCopyright("Copyright © Eben Roux 2017")]
+[assembly: AssemblyCopyright("Copyright © Eben Roux 2019")]
 [assembly: AssemblyProduct("Shuttle.Esb.Tools.EnqueueMessage")]
 [assembly: AssemblyCompany("Shuttle")]
 [assembly: AssemblyConfiguration("Release")]
