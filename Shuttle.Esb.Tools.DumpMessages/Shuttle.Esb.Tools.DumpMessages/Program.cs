@@ -4,7 +4,11 @@ using System.Text;
 using System.Xml;
 using Castle.Windsor;
 using Shuttle.Core.Castle;
-using Shuttle.Core.Infrastructure;
+using Shuttle.Core.Cli;
+using Shuttle.Core.Container;
+using Shuttle.Core.Contract;
+using Shuttle.Core.Reflection;
+using Shuttle.Core.Serialization;
 
 namespace Shuttle.Esb.Tools.DumpMessages
 {
@@ -170,7 +174,7 @@ namespace Shuttle.Esb.Tools.DumpMessages
 
             if (string.IsNullOrEmpty(uri))
             {
-                throw new ArgumentException(string.Format("Cannot continue with the {0} queue uri.", name));
+                throw new ArgumentException($"Cannot continue with the {name} queue uri.");
             }
 
             return uri;
